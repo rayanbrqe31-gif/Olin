@@ -136,7 +136,7 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
 <div id="vHome" class="home-wrap">
   <div class="cgrid" id="cgrid"></div>
   <div class="tablet-btn-wrap">
-    <button onclick="goTablet()" style="padding:9px 22px;border-radius:20px;border:1px solid rgba(124,58,237,0.4);background:rgba(124,58,237,0.1);color:var(--pl);cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px">
+    <button id="tabletModeBtn" onclick="goTablet()" style="padding:9px 22px;border-radius:20px;border:1px solid rgba(124,58,237,0.4);background:rgba(124,58,237,0.1);color:var(--pl);cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:7px">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.1" y2="18" stroke-width="3" stroke-linecap="round"/></svg>
       Tablet Presentation Mode
     </button>
@@ -164,8 +164,8 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
   <div class="det-grid">
     <div>
       <div class="mmain" id="mmain" onclick="openModal()">
-        <div class="pplay">&#9654;</div>
-        <div style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;font-size:10px;color:#fff">Click to fullscreen</div>
+        <div class="pplay" id="mainplay">&#9654;</div>
+        <div id="clickfull" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;font-size:10px;color:#fff">Click to fullscreen</div>
       </div>
       <div class="trow" id="trow"></div>
     </div>
@@ -185,7 +185,7 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
 <div id="modal" class="modal-ov" onclick="closeModal(event)">
   <button class="modal-close" onclick="closeModal()">&times;</button>
   <div class="modal-media" id="modal-media">
-    <div style="width:60px;height:60px;border-radius:50%;background:rgba(124,58,237,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">&#9654;</div>
+    <div id="modalplay" style="width:60px;height:60px;border-radius:50%;background:rgba(124,58,237,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">&#9654;</div>
   </div>
   <div class="modal-nav">
     <button onclick="modalPrev()">&#8249;</button>
@@ -217,7 +217,7 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
         <button class="hbtn" id="tbAR" onclick="setLang('AR')">AR</button>
         <button class="hbtn" id="tbKU" onclick="setLang('KU')">KU</button>
       </div>
-      <button onclick="goHome()" style="padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-size:12px;font-weight:600">Exit</button>
+      <button id="tabexitbtn" onclick="goHome()" style="padding:7px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text);cursor:pointer;font-size:12px;font-weight:600">Exit</button>
     </div>
   </div>
   <div class="tab-body">
@@ -228,7 +228,7 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
         <div style="width:60px;height:60px;border-radius:50%;background:rgba(124,58,237,0.4);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px">&#9654;</div>
       </div>
       <div class="trow" id="tthumbs" style="justify-content:center"></div>
-      <p style="margin-top:14px;color:var(--muted);font-size:13px">&#8592; Swipe to navigate &#8594;</p>
+      <p id="swipetext" style="margin-top:14px;color:var(--muted);font-size:13px">← Swipe to navigate →</p>
     </div>
     <button class="swbtn" style="right:16px" id="bnext" onclick="tNext()">&#8250;</button>
   </div>
@@ -473,7 +473,58 @@ function gc(k){
   return'linear-gradient(135deg,'+c[0]+','+c[1]+')';
 }
 
-// ─── APP STATE ────────────────────────────────────────────────────────────────
+// ─── UI STRINGS ───────────────────────────────────────────────────────────────
+const STR={
+  back:        {EN:'Back',          AR:'رجوع',        KU:'گەڕانەوە'},
+  backToSvc:   {EN:'Back to Services', AR:'رجوع للخدمات', KU:'گەڕانەوە بۆ خزمەتگوزاریەکان'},
+  viewFull:    {EN:'View Fullscreen',  AR:'عرض ملء الشاشة', KU:'پیشاندانی پڕ شاشە'},
+  clickFull:   {EN:'Click to fullscreen', AR:'انقر للشاشة الكاملة', KU:'کلیک بکە بۆ پڕ شاشە'},
+  tabletMode:  {EN:'Tablet Presentation Mode', AR:'وضع عرض الجهاز اللوحي', KU:'دۆخی پێشکەشکردنی تابلێت'},
+  swipe:       {EN:'← Swipe to navigate →', AR:'← اسحب للتنقل →', KU:'← بکێشە بۆ گەڕان →'},
+  exit:        {EN:'Exit',          AR:'خروج',        KU:'دەرچوون'},
+  adminLogin:  {EN:'Admin Login',   AR:'تسجيل دخول المدير', KU:'چوونەژوورەوەی ئەدمین'},
+  adminEmail:  {EN:'Admin Email',   AR:'البريد الإلكتروني', KU:'ئیمەیلی ئەدمین'},
+  password:    {EN:'Password',      AR:'كلمة المرور', KU:'تێپەڕەوشە'},
+  loginBtn:    {EN:'Login',         AR:'دخول',        KU:'چوونەژوورەوە'},
+  forgot:      {EN:'Forgot Password?', AR:'نسيت كلمة المرور؟', KU:'تێپەڕەوشەت بیرچووەتەوە؟'},
+  registerAdmin: {EN:'Register New Admin?', AR:'تسجيل مدير جديد؟', KU:'ئەدمینی نوێ تۆمار بکە؟'},
+};
+function t(key){return STR[key]?STR[key][lang]||STR[key]['EN']:key;}
+
+function refreshUIText(){
+  // Back buttons
+  document.querySelectorAll('.bbtn').forEach(function(b){
+    var svg=b.querySelector('svg');
+    b.textContent='';
+    if(svg)b.appendChild(svg);
+    b.appendChild(document.createTextNode(' '+t('back')));
+  });
+  // Back to services in edit panel
+  var bts=document.querySelector('#aedit .bbtn');
+  if(bts){var svg2=bts.querySelector('svg');bts.textContent='';if(svg2)bts.appendChild(svg2);bts.appendChild(document.createTextNode(' '+t('backToSvc')));}
+  // View fullscreen button
+  var vfBtn=document.querySelector('#vDet button[onclick="openModal()"]');
+  if(vfBtn){var svg3=vfBtn.querySelector('svg');vfBtn.textContent='';if(svg3)vfBtn.appendChild(svg3);vfBtn.appendChild(document.createTextNode(' '+t('viewFull')));}
+  // Click to fullscreen label
+  var cfEl=document.getElementById('clickfull');
+  if(cfEl)cfEl.textContent=t('clickFull');
+  // Tablet mode button
+  var tmBtn=document.getElementById('tabletModeBtn');
+  if(tmBtn){var svg4=tmBtn.querySelector('svg');tmBtn.textContent='';if(svg4)tmBtn.appendChild(svg4);tmBtn.appendChild(document.createTextNode(' '+t('tabletMode')));}
+  // Swipe text
+  var swEl=document.getElementById('swipetext');
+  if(swEl)swEl.textContent=t('swipe');
+  // Exit button
+  var exitBtn=document.getElementById('tabexitbtn');
+  if(exitBtn)exitBtn.textContent=t('exit');
+  // Login page
+  var alEl=document.querySelector('#vLog p');
+  if(alEl)alEl.textContent=t('adminLogin');
+  var aeEl=document.querySelector('#vLog label');
+  if(aeEl)aeEl.textContent=t('adminEmail');
+  var lgBtn=document.querySelector('#vLog .lgbtn');
+  if(lgBtn&&!lgBtn.disabled)lgBtn.textContent=t('loginBtn');
+}
 let CATS=[];
 let lang='EN',dark=true,cat=null,svc=null,mIdx=0,tIdx=0;
 let adminUser=null;
@@ -543,6 +594,7 @@ async function init(){
     await loadCatsFromDB();
     hideLoading();
     buildHome();sv('vHome');
+    refreshUIText();
   }catch(err){
     console.error('Init error:',err);
     hideLoading();
@@ -567,6 +619,7 @@ function setLang(l){
     if(b2)b2.classList.toggle('on',x===l);
   });
   document.body.dir=l==='AR'?'rtl':'ltr';
+  refreshUIText();
   buildHome();
   if(document.getElementById('vSvc').style.display!=='none')buildSvc();
   if(document.getElementById('vDet').style.display!=='none')buildDet();
@@ -601,12 +654,27 @@ function buildDet(){
   document.getElementById('trow').innerHTML=svc.m.map(function(k,i){return '<div class="thumb'+(i===mIdx?' on':'')+'" style="background:'+gc(k)+'" onclick="setM('+i+')"></div>';}).join('');
 }
 function setM(i){mIdx=i;upMain();document.querySelectorAll('#trow .thumb').forEach(function(e,j){e.classList.toggle('on',j===i);});}
-function upMain(){document.getElementById('mmain').style.background=gc(svc.m[mIdx]);}
+function upMain(){
+  var k=svc.m[mIdx];
+  var isVideo=k&&(k.startsWith('data:video')||k.includes('.mp4')||k.includes('.mov'));
+  var isColor=k&&!k.startsWith('data:')&&!k.startsWith('http')&&!k.startsWith('blob:');
+  document.getElementById('mmain').style.background=gc(k);
+  var pp=document.getElementById('mainplay');
+  if(pp)pp.style.display=(isVideo||isColor)?'flex':'none';
+}
 
 // ─── MODAL ────────────────────────────────────────────────────────────────────
 function openModal(){document.getElementById('modal').classList.add('open');updModal();}
 function closeModal(e){if(!e||e.target===document.getElementById('modal')||e.currentTarget.tagName==='BUTTON')document.getElementById('modal').classList.remove('open');}
-function updModal(){document.getElementById('modal-media').style.background=gc(svc.m[mIdx]);document.getElementById('modal-counter').textContent=(mIdx+1)+' / '+svc.m.length;}
+function updModal(){
+  var k=svc.m[mIdx];
+  var isVideo=k&&(k.startsWith('data:video')||k.includes('.mp4')||k.includes('.mov'));
+  var isColor=k&&!k.startsWith('data:')&&!k.startsWith('http')&&!k.startsWith('blob:');
+  document.getElementById('modal-media').style.background=gc(k);
+  document.getElementById('modal-counter').textContent=(mIdx+1)+' / '+svc.m.length;
+  var mp=document.getElementById('modalplay');
+  if(mp)mp.style.display=(isVideo||isColor)?'flex':'none';
+}
 function modalPrev(){if(mIdx>0){mIdx--;updModal();setM(mIdx);}}
 function modalNext(){if(svc&&mIdx<svc.m.length-1){mIdx++;updModal();setM(mIdx);}}
 
