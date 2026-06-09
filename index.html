@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OLIN Production</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0F0F1A;--card:rgba(255,255,255,0.07);--border:rgba(124,58,237,0.3);--border2:rgba(255,255,255,0.08);--text:#CBD5E1;--white:#fff;--muted:#64748b;--p:#7C3AED;--pl:#A78BFA;--icon:#A78BFA;--chover:rgba(124,58,237,0.18)}
@@ -396,7 +396,9 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
 // TODO: Replace these with your actual Supabase project values
 const SUPABASE_URL = 'https://vvsnpsdakmxdznbnobcv.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ2c25wc2Rha214ZHpubmJvYmN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEwMDQ1NDIsImV4cCI6MjA5NjU4MDU0Mn0.z5ZLpEn2K0OM9pRQE0WN5tl36V3fH6bT7jXJ5Iy6CaU';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true }
+});
 
 // ─── ICONS ───────────────────────────────────────────────────────────────────
 const IC={
