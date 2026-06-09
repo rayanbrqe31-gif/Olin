@@ -254,16 +254,11 @@ body{background:var(--bg);color:var(--white);font-family:'Segoe UI',system-ui,sa
     </svg>
     <p style="color:var(--muted);font-size:12px;margin-bottom:8px">Admin Login</p>
     <label class="ilabel">Admin Email</label>
-    <input class="ifield" type="email" id="lemail" placeholder="admin@olin.com"/>
+    <input class="ifield" type="email" id="lemail" placeholder="admin@olin.com" autocomplete="off"/>
     <label class="ilabel">Password</label>
-    <input class="ifield" type="password" id="lpass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/>
+    <input class="ifield" type="password" id="lpass" placeholder="••••••••" autocomplete="new-password" onkeydown="if(event.key==='Enter')doLogin()"/>
     <div class="errmsg" id="lerr"></div>
     <button class="lgbtn" onclick="doLogin()">Login</button>
-    <div style="display:flex;justify-content:center;gap:18px;margin-top:14px">
-      <button style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer">Forgot Password?</button>
-      <button style="background:none;border:none;color:var(--muted);font-size:11px;cursor:pointer">Register New Admin?</button>
-    </div>
-    <div class="hint">Use your Supabase admin credentials</div>
   </div>
 </div>
 
@@ -595,6 +590,9 @@ async function init(){
     hideLoading();
     buildHome();sv('vHome');
     refreshUIText();
+    // Clear login fields on load
+    var le=document.getElementById('lemail'),lp=document.getElementById('lpass');
+    if(le)le.value='';if(lp)lp.value='';
   }catch(err){
     console.error('Init error:',err);
     hideLoading();
